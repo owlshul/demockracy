@@ -89,7 +89,7 @@ const GENERAL_QUOTES = [
 const MILESTONES = {
   19:   { title: 'ARTICLE 19 — FREEDOM TO ASSEMBLE', sub: 'Constitution of India: Peaceful protest is a guaranteed Fundamental Right.', duration: 3200 },
   144:  { title: 'SECTION 163 BNSS IMPOSED', sub: 'Prohibiting assembly of 5+ citizens. SC: Cannot be used to silence dissent.', duration: 3200 },
-  370:  { title: 'ARTICLE 370 REMEMBERED', sub: 'Longest internet shutdown in democratic history. The precedent was set.', duration: 3400 },
+  326:  { title: 'ARTICLE 326 — RIGHT TO VOTE', sub: 'Constitution of India: Universal adult suffrage is the foundation of democracy.', duration: 3400 },
   1947: { title: '1947 — FREEDOM WAS WON', sub: 'Democracy was built by protests. Don\'t let it be dismantled in silence.', duration: 3800 },
   2026: { title: '2026 — CITIZENS STILL RUNNING', sub: '"Cockroaches never die." Keep moving forward.', duration: 3500 },
 };

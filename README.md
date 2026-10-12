@@ -35,7 +35,7 @@
 |-------|-------|
 | **19** | Article 19 — Right to Protest |
 | **144** | Section 163 Imposed |
-| **370** | Article 370 Remembered |
+| **326** | Article 326 — Right to Vote |
 | **1947** | 1947 — Freedom was Won |
 | **2026** | 2026 — Citizens Still Running |
 
