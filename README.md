@@ -2,6 +2,8 @@
 
 > *A satirical runner game.*
 
+![DeMOCKracy Gameplay Preview](demockracy_showcase_gameplay.png)
+
 ---
 
 ## 🎮 How to Play
