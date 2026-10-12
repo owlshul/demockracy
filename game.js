@@ -99,7 +99,7 @@ const CHARACTERS = [
   {
     id: 'cockroach',
     name: 'COCKROACH',
-    label: '🪳 COCKROACH',
+    label: 'COCKROACH',
     tag: '"Cockroaches never die"',
     color: '#333333',
     w: 52, h: 58,
@@ -113,7 +113,7 @@ const CHARACTERS = [
   {
     id: 'dino',
     name: 'DINO',
-    label: '🦖 CLASSIC DINO',
+    label: 'CLASSIC DINO',
     tag: '"Chrome endless runner"',
     color: '#333333',
     w: 48, h: 54,
@@ -127,7 +127,7 @@ const CHARACTERS = [
   {
     id: 'student',
     name: 'STUDENT',
-    label: '📢 PROTESTER',
+    label: 'PROTESTER',
     tag: '"Save Democracy · Placard"',
     color: '#333333',
     w: 48, h: 56,
@@ -141,7 +141,7 @@ const CHARACTERS = [
   {
     id: 'journalist',
     name: 'JOURNALIST',
-    label: '📷 PRESS CORPS',
+    label: 'PRESS CORPS',
     tag: '"Press is not a crime"',
     color: '#333333',
     w: 48, h: 56,
@@ -469,7 +469,7 @@ class ParallaxBackground {
       ctx.fillStyle = '#f7f7f7';
       ctx.font = '10px "Press Start 2P", monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('⚠ INTERNET SUSPENDED BY AUTHORITIES ⚠', C.WIDTH / 2, C.HEIGHT / 2);
+      ctx.fillText('[INTERNET SUSPENDED BY AUTHORITIES]', C.WIDTH / 2, C.HEIGHT / 2);
       ctx.textAlign = 'left';
     }
   }
@@ -858,7 +858,7 @@ class HUD {
     ctx.textAlign = 'left';
     ctx.font = C.FONTS.HUD_TAG;
     ctx.fillStyle = isDark ? '#888899' : '#888888';
-    ctx.fillText(isMuted ? '🔇 MUTED (M)' : '🔊 SOUND (M)', 14, 24);
+    ctx.fillText(isMuted ? 'SOUND: OFF (M)' : 'SOUND: ON (M)', 14, 24);
 
     ctx.restore();
   }
@@ -1123,7 +1123,7 @@ const SocialShare = {
     const url = window.location.origin.includes('localhost')
       ? 'https://owlshul.github.io/demockracy/'
       : window.location.href;
-    return `I survived to ${sc} pts in DeMOCKracy 🪳\n"A govt that can't tolerate a protest, can't tolerate democracy."\nPlay the satirical runner: ${url}`;
+    return `I survived to ${sc} pts in DeMOCKracy\n"A govt that can't tolerate a protest, can't tolerate democracy."\nPlay the satirical runner: ${url}`;
   },
 
   shareCopy(score) {

@@ -6,6 +6,7 @@ node_modules/
 debug_crops/
 assets/raw_crops/
 assets/test/
+assets/fonts/
 
 # OS files
 .DS_Store
