@@ -1081,7 +1081,10 @@ class CharacterSelectScreen {
 const SocialShare = {
   getScoreMessage(score) {
     const sc = String(Math.floor(score)).padStart(5, '0');
-    return `I survived to ${sc} pts in DeMOCKracy 🪳\n"A govt that can't tolerate a protest, can't tolerate democracy."\nPlay the satirical runner: https://demockracy.vercel.app`;
+    const url = window.location.origin.includes('localhost')
+      ? 'https://owlshul.github.io/demockracy/'
+      : window.location.href;
+    return `I survived to ${sc} pts in DeMOCKracy 🪳\n"A govt that can't tolerate a protest, can't tolerate democracy."\nPlay the satirical runner: ${url}`;
   },
 
   shareCopy(score) {
