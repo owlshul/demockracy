@@ -1,7 +1,5 @@
 // ============================================================
-// DeMOCKracy — Main Game Engine (v2)
-// A satirical Chrome Dino-style endless runner based on
-// the Oct 2026 India democracy protests & CJP movement.
+// DeMOCKracy — A satirical runner game.
 // ============================================================
 
 'use strict';
@@ -79,12 +77,12 @@ const OBSTACLE_FACTS = {
 // ── GENERAL PROTEST QUOTES (fallback) ───────────────────────
 const GENERAL_QUOTES = [
   { text: '"A govt that can\'t tolerate a protest, can\'t tolerate democracy."', sub: 'Protest Banner — Delhi, Oct 2026' },
-  { text: '"Cockroaches never die."', sub: 'Cockroach Janta Party (CJP) Movement' },
+  { text: '"Cockroaches never die."', sub: 'Protest Slogan' },
   { text: '130+ Million names removed from electoral rolls without individual notice.', sub: 'Electoral Revision Purge — Oct 2026' },
   { text: 'Metro stations closed and mobile internet suspended to silence dissent.', sub: 'Delhi Protests — Oct 2026' },
   { text: 'Supreme Court: "Dissent is the safety valve of democracy."', sub: 'Justice D.Y. Chandrachud' },
   { text: 'UN Human Rights: "Deeply concerned by mass detentions of peaceful protesters."', sub: 'Geneva Statement — Oct 2026' },
-  { text: '"War with its own citizens." — CJP', sub: 'Delhi University Students Union' }
+  { text: '"War with its own citizens."', sub: 'Student Union Statement' }
 ];
 
 // ── EASTER EGG MILESTONES ───────────────────────────────────
@@ -101,7 +99,7 @@ const CHARACTERS = [
   {
     id: 'cockroach',
     name: 'COCKROACH',
-    label: '🪳 CJP MASCOT',
+    label: '🪳 COCKROACH',
     tag: '"Cockroaches never die"',
     color: '#333333',
     w: 52, h: 58,
@@ -1043,20 +1041,59 @@ class CharacterSelectScreen {
       ctx.fillText(ch.label, cx + cardW / 2, cardY + cardH - 6);
     });
 
-    // Instructions Footer
-    ctx.textAlign = 'center';
-    ctx.font = '10px "Silkscreen", monospace';
-    ctx.fillStyle = '#444444';
-    ctx.fillText('← / → ARROW KEYS OR CLICK TO CHOOSE', C.WIDTH / 2, 192);
+    // Touch navigation arrows (< and >)
+    ctx.fillStyle = '#ffffff';
+    ctx.strokeStyle = '#333333';
+    ctx.lineWidth = 2;
 
-    ctx.font = '10px "Press Start 2P", monospace';
+    // Left Arrow <
+    ctx.fillRect(16, 96, 36, 40);
+    ctx.strokeRect(16, 96, 36, 40);
+    ctx.fillStyle = '#2b2b2b';
+    ctx.font = 'bold 16px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('◀', 34, 122);
+
+    // Right Arrow >
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(C.WIDTH - 52, 96, 36, 40);
+    ctx.strokeRect(C.WIDTH - 52, 96, 36, 40);
+    ctx.fillStyle = '#2b2b2b';
+    ctx.fillText('▶', C.WIDTH - 34, 122);
+
+    // Explicit Touch Start Button
+    const startBtnW = 260;
+    const startBtnH = 32;
+    const startBtnX = (C.WIDTH - startBtnW) / 2;
+    const startBtnY = 204;
+
     ctx.fillStyle = '#c93b2b';
-    ctx.fillText('PRESS SPACE OR TAP TO RUN!', C.WIDTH / 2, 222);
+    ctx.fillRect(startBtnX, startBtnY, startBtnW, startBtnH);
+    ctx.strokeStyle = '#2b2b2b';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(startBtnX, startBtnY, startBtnW, startBtnH);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '10px "Press Start 2P", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('▶ TAP TO START', C.WIDTH / 2, startBtnY + 21);
 
     ctx.restore();
   }
 
   handleClick(canvasX, canvasY) {
+    // Check Left Arrow
+    if (canvasX >= 16 && canvasX <= 52 && canvasY >= 96 && canvasY <= 136) {
+      this.prev();
+      return 'nav';
+    }
+    // Check Right Arrow
+    if (canvasX >= C.WIDTH - 52 && canvasX <= C.WIDTH - 16 && canvasY >= 96 && canvasY <= 136) {
+      this.next();
+      return 'nav';
+    }
+
+    // Check Cards
     const cardW = 180;
     const cardH = 100;
     const gap = 16;
@@ -1068,10 +1105,12 @@ class CharacterSelectScreen {
       const cx = startX + idx * (cardW + gap);
       if (canvasX >= cx && canvasX <= cx + cardW && canvasY >= cardY && canvasY <= cardY + cardH) {
         this.select(idx);
-        return true;
+        return 'card';
       }
     }
-    return false;
+
+    // Tapping Start Button or anywhere else starts the game
+    return 'start';
   }
 }
 
@@ -1287,19 +1326,19 @@ class Game {
       const canvasY = (clientY - rect.top) * scaleY;
 
       if (this.state === 'CHAR_SELECT') {
-        const clickedCard = this.charScreen.handleClick(canvasX, canvasY);
-        if (!clickedCard) {
+        const action = this.charScreen.handleClick(canvasX, canvasY);
+        if (action === 'start') {
           this._startGame();
         }
         return;
       }
 
       if (this.state === 'GAME_OVER') {
-        // Check if clicked "[C] CHANGE CHARACTER" button on GameOver screen
-        const btnChangeX = C.WIDTH / 2 - 130;
-        const btnChangeY = 212;
-        const btnW = 260;
-        const btnH = 26;
+        // Check if clicked "[C] CHANGE CHARACTER" button
+        const btnChangeX = C.WIDTH / 2 - 140;
+        const btnChangeY = 206;
+        const btnW = 280;
+        const btnH = 28;
 
         if (canvasX >= btnChangeX && canvasX <= btnChangeX + btnW && canvasY >= btnChangeY && canvasY <= btnChangeY + btnH) {
           this.state = 'CHAR_SELECT';
@@ -1308,25 +1347,33 @@ class Game {
           return;
         }
 
-        // Otherwise tap restarts game
+        // Any other tap (including 'TAP TO RETRY') restarts game
         this._startGame();
         return;
       }
 
       if (this.state === 'RUNNING') {
-        // Upper 60% = Jump, Lower 40% = Duck
-        if (canvasY < C.HEIGHT * 0.60) {
+        // Upper 65% = Jump, Lower 35% = Duck
+        if (canvasY < C.HEIGHT * 0.65) {
           this.player.jump(true);
+          this.jumpPressed = true;
         } else {
           this.player.duck(true);
-          setTimeout(() => this.player.duck(false), 450);
         }
+      }
+    };
+
+    const handlePointerRelease = () => {
+      if (this.state === 'RUNNING') {
+        this.player.duck(false);
+        this.jumpPressed = false;
       }
     };
 
     this.canvas.addEventListener('mousedown', (e) => {
       handleCanvasPointer(e.clientX, e.clientY);
     });
+    this.canvas.addEventListener('mouseup', handlePointerRelease);
 
     this.canvas.addEventListener('touchstart', (e) => {
       e.preventDefault();
@@ -1334,6 +1381,56 @@ class Game {
         handleCanvasPointer(e.touches[0].clientX, e.touches[0].clientY);
       }
     }, { passive: false });
+
+    this.canvas.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      handlePointerRelease();
+    }, { passive: false });
+
+    // On-Screen Mobile Action Buttons
+    const jumpBtn = document.getElementById('touch-jump-btn');
+    const duckBtn = document.getElementById('touch-duck-btn');
+
+    if (jumpBtn) {
+      const onJumpStart = (e) => {
+        e.preventDefault();
+        this.sound.init();
+        if (this.state === 'CHAR_SELECT' || this.state === 'GAME_OVER') {
+          this._startGame();
+        } else if (this.state === 'RUNNING') {
+          this.player.jump(true);
+          this.jumpPressed = true;
+        }
+      };
+      const onJumpEnd = (e) => {
+        e.preventDefault();
+        this.jumpPressed = false;
+      };
+      jumpBtn.addEventListener('touchstart', onJumpStart, { passive: false });
+      jumpBtn.addEventListener('touchend', onJumpEnd, { passive: false });
+      jumpBtn.addEventListener('mousedown', onJumpStart);
+      jumpBtn.addEventListener('mouseup', onJumpEnd);
+    }
+
+    if (duckBtn) {
+      const onDuckStart = (e) => {
+        e.preventDefault();
+        this.sound.init();
+        if (this.state === 'RUNNING') {
+          this.player.duck(true);
+        }
+      };
+      const onDuckEnd = (e) => {
+        e.preventDefault();
+        if (this.state === 'RUNNING') {
+          this.player.duck(false);
+        }
+      };
+      duckBtn.addEventListener('touchstart', onDuckStart, { passive: false });
+      duckBtn.addEventListener('touchend', onDuckEnd, { passive: false });
+      duckBtn.addEventListener('mousedown', onDuckStart);
+      duckBtn.addEventListener('mouseup', onDuckEnd);
+    }
 
     // Social Sharing Buttons
     document.getElementById('share-btn')?.addEventListener('click', () => {
@@ -1487,22 +1584,33 @@ class Game {
     // Actions
     ctx.textAlign = 'center';
 
-    // Restart prompt
-    ctx.font = '11px "Press Start 2P", monospace';
-    ctx.fillStyle = isDark ? '#ffffff' : '#2b2b2b';
-    ctx.fillText('PRESS SPACE / TAP TO TRY AGAIN', C.WIDTH / 2, 192);
+    // Interactive Tap to Retry Button
+    const btnRetryX = C.WIDTH / 2 - 140;
+    const btnRetryY = 174;
+    const btnRetryW = 280;
+    const btnRetryH = 28;
 
-    // Change Character Interactive Button
-    const btnChangeX = C.WIDTH / 2 - 130;
+    ctx.fillStyle = '#c93b2b';
+    ctx.fillRect(btnRetryX, btnRetryY, btnRetryW, btnRetryH);
+    ctx.strokeStyle = '#2b2b2b';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(btnRetryX, btnRetryY, btnRetryW, btnRetryH);
+
+    ctx.font = '10px "Press Start 2P", monospace';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('▶ TAP TO RETRY', C.WIDTH / 2, btnRetryY + 19);
+
+    // Interactive Change Character Button
+    const btnChangeX = C.WIDTH / 2 - 140;
     const btnChangeY = 208;
-    const btnW = 260;
-    const btnH = 24;
+    const btnChangeW = 280;
+    const btnChangeH = 24;
 
     ctx.fillStyle = isDark ? '#333344' : '#eaeaea';
-    ctx.fillRect(btnChangeX, btnChangeY, btnW, btnH);
+    ctx.fillRect(btnChangeX, btnChangeY, btnChangeW, btnChangeH);
     ctx.strokeStyle = '#888888';
     ctx.lineWidth = 1;
-    ctx.strokeRect(btnChangeX, btnChangeY, btnW, btnH);
+    ctx.strokeRect(btnChangeX, btnChangeY, btnChangeW, btnChangeH);
 
     ctx.font = '9px "Silkscreen", monospace';
     ctx.fillStyle = isDark ? '#ffffff' : '#333333';

@@ -7,38 +7,44 @@
 }
 
 html, body {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   background: #f7f7f7;
   color: #333333;
   font-family: 'Silkscreen', 'Press Start 2P', monospace;
-  min-height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
-  justify-content: flex-start;
   overflow-x: hidden;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
-/* ── Container wrapper ── */
+/* ── Centered Game Wrapper (Full Width, Open Top & Bottom) ── */
 .game-wrapper {
   width: 100%;
-  max-width: 920px;
-  padding: 16px 12px;
+  max-width: 1020px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  margin: auto;
+  padding: 8px 0;
 }
 
-/* ── Header ── */
+/* ── Minimal Header ── */
 .header {
   text-align: center;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
+  padding: 0 16px;
 }
 
 .title {
   font-family: 'Press Start 2P', monospace;
-  font-size: clamp(20px, 4vw, 30px);
+  font-size: clamp(20px, 4.5vw, 28px);
   color: #2b2b2b;
   letter-spacing: 2px;
 }
@@ -50,23 +56,22 @@ html, body {
 }
 
 .tagline {
-  font-family: Georgia, serif;
-  font-size: clamp(11px, 2.2vw, 13px);
-  font-style: italic;
-  color: #666;
-  margin-top: 6px;
-  line-height: 1.4;
+  font-family: 'Silkscreen', monospace;
+  font-size: clamp(10px, 2.5vw, 12px);
+  color: #777;
+  margin-top: 4px;
+  letter-spacing: 0.5px;
 }
 
-/* ── Canvas Container ── */
+/* ── Canvas Container (Borderless, Edge-to-Edge, Open Top & Bottom) ── */
 .canvas-container {
   width: 100%;
   position: relative;
-  background: #f7f7f7;
-  border: 2px solid #333;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border-radius: 4px;
-  overflow: hidden;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  overflow: visible;
 }
 
 #game-canvas {
@@ -76,25 +81,65 @@ html, body {
   aspect-ratio: 900 / 250;
   cursor: pointer;
   touch-action: none;
-  image-rendering: auto; /* Crisp Retina text, while pixel art images use context crisp settings */
+  border: none;
+}
+
+/* ── Mobile Touch Action Bar ── */
+.mobile-touch-bar {
+  display: none;
+  width: 100%;
+  max-width: 600px;
+  padding: 10px 16px 4px;
+  gap: 16px;
+  justify-content: center;
+}
+
+.touch-btn {
+  flex: 1;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 13px;
+  padding: 14px 10px;
+  background: #ffffff;
+  border: 2px solid #333333;
+  color: #222222;
+  border-radius: 6px;
+  text-align: center;
+  touch-action: manipulation;
+  user-select: none;
+  box-shadow: 0 3px 0 #333333;
+  transition: transform 0.05s ease, box-shadow 0.05s ease;
+}
+
+.touch-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #333333;
+  background: #eaeaea;
+}
+
+.touch-btn-jump {
+  background: #fdfdfd;
+}
+
+.touch-btn-duck {
+  background: #f5f5f5;
 }
 
 /* ── Controls Bar ── */
 .controls-bar {
   width: 100%;
-  margin-top: 10px;
+  margin-top: 6px;
   display: flex;
   justify-content: center;
+  padding: 0 12px;
 }
 
 .ctrl-tag {
   font-family: 'Silkscreen', monospace;
   font-size: 11px;
-  color: #666;
-  background: #eaeaea;
-  border: 1px solid #ccc;
-  padding: 6px 14px;
-  border-radius: 3px;
+  color: #777;
+  background: transparent;
+  border: none;
+  padding: 4px 8px;
   letter-spacing: 0.5px;
   text-align: center;
 }
@@ -103,48 +148,48 @@ html, body {
   color: #222;
   font-weight: bold;
   background: #fff;
-  padding: 1px 4px;
-  border: 1px solid #bbb;
-  border-radius: 2px;
+  padding: 1px 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
 }
 
-.mobile-only {
-  display: none;
-}
-
-@media (max-width: 680px) {
+/* Mobile responsive rules */
+@media (max-width: 768px) {
   .desktop-only { display: none; }
-  .mobile-only { display: block; }
-  .ctrl-tag { font-size: 9px; padding: 5px 8px; }
+  .mobile-touch-bar { display: flex; }
+  .ctrl-tag { font-size: 9px; }
+  .game-wrapper { padding: 4px 0; }
 }
 
-/* ── Share Area ── */
+@media (pointer: coarse) {
+  /* Touch screen devices */
+  .desktop-only { display: none; }
+  .mobile-touch-bar { display: flex; }
+}
+
+/* ── Share Area (Game Over) ── */
 .share-area {
   display: none;
-  width: 100%;
-  margin-top: 14px;
-  background: #eaeaea;
-  border: 2px solid #444;
+  width: calc(100% - 24px);
+  max-width: 580px;
+  margin: 10px auto 0;
+  background: #ffffff;
+  border: 2px solid #333;
   padding: 12px 16px;
   border-radius: 4px;
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  animation: fadeIn 0.3s ease;
+  box-shadow: 0 4px 0 #333;
 }
 
 .share-area.visible {
   display: flex;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 .share-title {
   font-family: 'Press Start 2P', monospace;
-  font-size: 10px;
+  font-size: 9px;
   color: #333;
   letter-spacing: 1px;
 }
@@ -161,7 +206,7 @@ html, body {
   font-size: 11px;
   font-weight: bold;
   padding: 8px 14px;
-  background: #fff;
+  background: #f7f7f7;
   border: 2px solid #333;
   color: #222;
   border-radius: 3px;
@@ -169,30 +214,28 @@ html, body {
   transition: all 0.15s ease;
 }
 
-.share-btn:hover {
+.share-btn:hover, .share-btn:active {
   background: #2b2b2b;
   color: #fff;
 }
 
-.share-btn.share-x:hover {
+.share-btn.share-x:hover, .share-btn.share-x:active {
   background: #000;
   border-color: #000;
   color: #fff;
 }
 
-.share-btn.share-wa:hover {
+.share-btn.share-wa:hover, .share-btn.share-wa:active {
   background: #25D366;
   border-color: #25D366;
   color: #fff;
 }
 
-/* ── Footer ── */
+/* ── Minimal Footer ── */
 .footer {
-  margin-top: 18px;
+  margin-top: 10px;
   text-align: center;
-  font-family: Georgia, serif;
-  font-size: 11px;
-  color: #888;
-  max-width: 600px;
-  line-height: 1.5;
+  font-family: 'Silkscreen', monospace;
+  font-size: 10px;
+  color: #999;
 }
