@@ -1,0 +1,12 @@
+{
+  "name": "demockracy",
+  "version": "1.0.0",
+  "description": "DeMOCKracy — A satirical Chrome Dino-style endless runner about surviving the crackdown on democracy.",
+  "private": true,
+  "scripts": {
+    "dev": "npx serve .",
+    "start": "npx serve ."
+  },
+  "keywords": ["game", "satire", "democracy", "india", "protest"],
+  "license": "MIT"
+}

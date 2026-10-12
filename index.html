@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DeMOCKracy — The Game</title>
+  <meta name="description" content="A govt that can't tolerate a protest, can't tolerate democracy. A satirical endless runner browser game.">
+  <meta name="theme-color" content="#f7f7f7">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="DeMOCKracy — The Game">
+  <meta property="og:description" content="A govt that can't tolerate a protest, can't tolerate democracy. Play the satirical runner.">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts: Silkscreen & Press Start 2P for crisp legible pixel art -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="game-wrapper" id="game-wrapper">
+    <header class="header">
+      <h1 class="title">De<span class="mock">MOCK</span>racy</h1>
+      <p class="tagline">"A govt that can't tolerate a protest, can't tolerate democracy."</p>
+    </header>
+
+    <div class="canvas-container">
+      <canvas id="game-canvas"></canvas>
+    </div>
+
+    <!-- Onscreen Mobile Touch Overlay / Quick Controls -->
+    <div class="controls-bar" id="controls-bar">
+      <div class="ctrl-tag desktop-only">
+        <span class="key">SPACE</span> / <span class="key">↑</span> Jump &nbsp;|&nbsp; 
+        <span class="key">↓</span> Duck &nbsp;|&nbsp; 
+        <span class="key">←</span> <span class="key">→</span> Select &nbsp;|&nbsp; 
+        <span class="key">C</span> Change Char &nbsp;|&nbsp; 
+        <span class="key">M</span> Mute
+      </div>
+      <div class="ctrl-tag mobile-only">
+        <span>TAP TOP: Jump &nbsp;|&nbsp; TAP BOTTOM: Duck</span>
+      </div>
+    </div>
+
+    <!-- Share Area (Visible upon Game Over) -->
+    <div class="share-area" id="share-area">
+      <div class="share-header">
+        <span class="share-title">SHARE YOUR PROTEST SCORE</span>
+      </div>
+      <div class="share-btns">
+        <button class="share-btn" id="share-btn">📋 Copy / Share</button>
+        <button class="share-btn share-x" id="share-x-btn">𝕏 Post to Twitter</button>
+        <button class="share-btn share-wa" id="share-wa-btn">💬 WhatsApp</button>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>A satirical runner game based on the Oct 2026 India democracy protests & the CJP movement.</p>
+    </footer>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

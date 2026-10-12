@@ -1,0 +1,12 @@
+# Dependencies & virtual environment
+.venv/
+node_modules/
+
+# Temporary / debug crops
+debug_crops/
+assets/raw_crops/
+assets/test/
+
+# OS files
+.DS_Store
+Thumbs.db
