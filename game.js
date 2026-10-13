@@ -9,6 +9,7 @@ const C = {
   WIDTH: 900,
   HEIGHT: 250,
   GROUND_Y: 202,           // Ground line where feet touch
+  IS_MOBILE: false,
   GRAVITY: 0.70,
   JUMP_VEL: -13.2,
   JUMP_VEL_HOLD: -14.6,
@@ -41,7 +42,7 @@ const C = {
 // ── FACT-CHECKED LEGAL CITATIONS (matched to obstacles) ─────
 const OBSTACLE_FACTS = {
   barricade: {
-    title: 'ARTICLE 19(1)(b) — RIGHT TO PEACEFUL ASSEMBLY',
+    title: 'ARTICLE 19(1)(b) - RIGHT TO PEACEFUL ASSEMBLY',
     text: 'The Supreme Court (Shaheen Bagh, 2020) affirmed that peaceful protest is a fundamental right. Public roads cannot be indefinitely blocked or barricaded by police to deny citizens their right to assemble.'
   },
   police: {
@@ -49,7 +50,7 @@ const OBSTACLE_FACTS = {
     text: 'Use of police force must be strictly proportional. Section 46(4) BNSS/CrPC strictly prohibits male police officers from physically detaining or handling female protesters.'
   },
   bus: {
-    title: 'ARTICLE 22 — PROTECTION AGAINST ILLEGAL ARREST',
+    title: 'ARTICLE 22 - PROTECTION AGAINST ILLEGAL ARREST',
     text: 'Every detained citizen must be informed of the grounds of arrest immediately and produced before a magistrate within 24 hours. Mass "preventive detention" to stop rallies violates constitutional safeguards.'
   },
   section163: {
@@ -65,7 +66,7 @@ const OBSTACLE_FACTS = {
     text: 'Under police regulations, a lathi charge can only be ordered by an executive magistrate after three clear warnings when life is in imminent danger. Non-violent protesters cannot be struck.'
   },
   drone: {
-    title: 'JUSTICE K.S. PUTTASWAMY (2017) — RIGHT TO PRIVACY',
+    title: 'JUSTICE K.S. PUTTASWAMY (2017) - RIGHT TO PRIVACY',
     text: 'The nine-judge Supreme Court bench held that privacy is a Fundamental Right under Article 21. Deploying facial-recognition drones to catalog peaceful citizens creates an unlawful chilling effect.'
   },
   watercannon: {
@@ -529,6 +530,10 @@ class ParallaxBackground {
     const tile = this.loader.get('ground_tile');
     const isDark = this.skyBlend > 0.7;
 
+    // Solid fill below ground line so whole ground is filled
+    ctx.fillStyle = isDark ? '#1a1a24' : '#f0f0f0';
+    ctx.fillRect(0, C.GROUND_Y + 1, C.WIDTH, Math.max(2, C.HEIGHT - C.GROUND_Y));
+
     // Solid base ground line
     ctx.fillStyle = isDark ? '#444455' : '#333333';
     ctx.fillRect(0, C.GROUND_Y, C.WIDTH, 2);
@@ -562,7 +567,7 @@ class Player {
     this.loader = loader;
     this.sound = sound;
 
-    this.x = 80;
+    this.x = C.IS_MOBILE ? 60 : 80;
     this.vy = 0;
     this.state = 'RUN'; // RUN | JUMP | DUCK | HIT
     this.frameIndex = 0;
@@ -780,8 +785,8 @@ class ObstacleManager {
       });
 
       // Variable spacing based on speed and difficulty
-      const minGap = Math.max(260, C.OBSTACLE_MIN_GAP - score * 0.04);
-      const maxGap = Math.max(460, C.OBSTACLE_MAX_GAP - score * 0.06);
+      const minGap = Math.max(C.IS_MOBILE ? 220 : 260, (C.OBSTACLE_MIN_GAP * (C.IS_MOBILE ? 0.82 : 1.0)) - score * 0.04);
+      const maxGap = Math.max(C.IS_MOBILE ? 380 : 460, (C.OBSTACLE_MAX_GAP * (C.IS_MOBILE ? 0.82 : 1.0)) - score * 0.06);
       this.nextSpawnX = minGap + Math.random() * (maxGap - minGap);
     }
   }
@@ -841,9 +846,9 @@ class HUD {
     ctx.textAlign = 'right';
 
     // High Score
-    ctx.font = C.FONTS.HUD;
+    ctx.font = C.IS_MOBILE ? '9px "Press Start 2P", monospace' : C.FONTS.HUD;
     ctx.fillStyle = isDark ? '#888899' : '#888888';
-    ctx.fillText(`HI ${hi}`, C.WIDTH - 14, 24);
+    ctx.fillText(`HI ${hi}`, C.WIDTH - 14, 22);
 
     // Current Score (flashes on milestones)
     if (this.scoreFlash > 0) {
@@ -852,13 +857,14 @@ class HUD {
     } else {
       ctx.fillStyle = isDark ? '#e0e0f0' : '#2b2b2b';
     }
-    ctx.fillText(sc, C.WIDTH - 14, 42);
+    ctx.font = C.IS_MOBILE ? '11px "Press Start 2P", monospace' : C.FONTS.HUD;
+    ctx.fillText(sc, C.WIDTH - 14, C.IS_MOBILE ? 38 : 42);
 
     // Mute Status Icon
     ctx.textAlign = 'left';
-    ctx.font = C.FONTS.HUD_TAG;
+    ctx.font = C.IS_MOBILE ? '8px "Silkscreen", monospace' : C.FONTS.HUD_TAG;
     ctx.fillStyle = isDark ? '#888899' : '#888888';
-    ctx.fillText(isMuted ? 'SOUND: OFF (M)' : 'SOUND: ON (M)', 14, 24);
+    ctx.fillText(isMuted ? 'MUTE: ON' : 'SOUND: ON', 14, 22);
 
     ctx.restore();
   }
@@ -897,13 +903,13 @@ class MilestoneBanner {
     ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
 
     // Sleek centered banner at the top
-    const bw = 520;
-    const bh = 44;
+    const bw = Math.min(500, C.WIDTH - 24);
+    const bh = C.IS_MOBILE ? 46 : 44;
     const bx = (C.WIDTH - bw) / 2;
-    const by = 14;
+    const by = C.IS_MOBILE ? 46 : 12;
 
     // Background box
-    ctx.fillStyle = 'rgba(34, 34, 42, 0.92)';
+    ctx.fillStyle = 'rgba(34, 34, 42, 0.94)';
     ctx.fillRect(bx, by, bw, bh);
 
     // Clean border
@@ -913,13 +919,13 @@ class MilestoneBanner {
 
     // Title
     ctx.fillStyle = '#ffffff';
-    ctx.font = C.FONTS.BANNER;
+    ctx.font = C.IS_MOBILE ? '9px "Press Start 2P", monospace' : C.FONTS.BANNER;
     ctx.textAlign = 'center';
     ctx.fillText(this.active.title, C.WIDTH / 2, by + 18);
 
     // Subtitle
     ctx.fillStyle = '#dcdcdc';
-    ctx.font = C.FONTS.BANNER_SUB;
+    ctx.font = C.IS_MOBILE ? '9px "Silkscreen", monospace' : C.FONTS.BANNER_SUB;
     ctx.fillText(this.active.sub, C.WIDTH / 2, by + 34);
 
     ctx.restore();
@@ -978,6 +984,117 @@ class CharacterSelectScreen {
     ctx.fillStyle = '#333333';
     ctx.fillRect(0, C.GROUND_Y, C.WIDTH, 2);
 
+    if (C.IS_MOBILE) {
+      this._drawMobile(ctx);
+    } else {
+      this._drawDesktop(ctx);
+    }
+
+    ctx.restore();
+  }
+
+  _drawMobile(ctx) {
+    // Header Title
+    ctx.fillStyle = '#2b2b2b';
+    ctx.font = 'bold 14px "Press Start 2P", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('SELECT PROTESTER', C.WIDTH / 2, 32);
+
+    ctx.font = '9px "Silkscreen", monospace';
+    ctx.fillStyle = '#666666';
+    ctx.fillText('CHOOSE WHO WILL RUN', C.WIDTH / 2, 48);
+
+    const ch = CHARACTERS[this.selected];
+    const cardW = 280;
+    const cardH = 146;
+    const cardX = (C.WIDTH - cardW) / 2;
+    const cardY = 62;
+
+    // Card Box
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(cardX, cardY, cardW, cardH);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#c93b2b';
+    ctx.strokeRect(cardX, cardY, cardW, cardH);
+
+    // Selected ribbon
+    ctx.fillStyle = '#c93b2b';
+    ctx.fillRect(cardX, cardY, cardW, 20);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '8px "Press Start 2P", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(`PROTESTER ${this.selected + 1} OF ${CHARACTERS.length}`, cardX + cardW / 2, cardY + 14);
+
+    // Animated Sprite
+    const runSprites = ch.sprites.run;
+    const frameKey = runSprites[this.animFrame % runSprites.length];
+    const img = this.loader.get(frameKey);
+    const spriteDrawX = cardX + (cardW - ch.w) / 2;
+    const spriteDrawY = cardY + 28;
+
+    if (img) {
+      ctx.drawImage(img, 0, 0, img.width, img.height, spriteDrawX, spriteDrawY, ch.w, ch.h);
+    }
+
+    // Name & Lore
+    ctx.fillStyle = '#2b2b2b';
+    ctx.font = 'bold 12px "Press Start 2P", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(ch.name, cardX + cardW / 2, cardY + cardH - 24);
+
+    ctx.fillStyle = '#777777';
+    ctx.font = '8px "Silkscreen", monospace';
+    ctx.fillText(ch.label, cardX + cardW / 2, cardY + cardH - 10);
+
+    // Touch navigation arrows
+    ctx.fillStyle = '#ffffff';
+    ctx.strokeStyle = '#333333';
+    ctx.lineWidth = 2;
+
+    // Left Arrow ◀
+    ctx.fillRect(22, 105, 58, 58);
+    ctx.strokeRect(22, 105, 58, 58);
+    ctx.fillStyle = '#2b2b2b';
+    ctx.font = 'bold 22px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('◀', 51, 142);
+
+    // Right Arrow ▶
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(C.WIDTH - 80, 105, 58, 58);
+    ctx.strokeRect(C.WIDTH - 80, 105, 58, 58);
+    ctx.fillStyle = '#2b2b2b';
+    ctx.fillText('▶', C.WIDTH - 51, 142);
+
+    // Progress Dots
+    const dotSpacing = 16;
+    const dotStartX = C.WIDTH / 2 - ((CHARACTERS.length - 1) * dotSpacing) / 2;
+    for (let i = 0; i < CHARACTERS.length; i++) {
+      ctx.beginPath();
+      ctx.arc(dotStartX + i * dotSpacing, 224, i === this.selected ? 5 : 3, 0, Math.PI * 2);
+      ctx.fillStyle = i === this.selected ? '#c93b2b' : '#cccccc';
+      ctx.fill();
+    }
+
+    // Touch Start Button
+    const startBtnW = 320;
+    const startBtnH = 42;
+    const startBtnX = (C.WIDTH - startBtnW) / 2;
+    const startBtnY = 244;
+
+    ctx.fillStyle = '#c93b2b';
+    ctx.fillRect(startBtnX, startBtnY, startBtnW, startBtnH);
+    ctx.strokeStyle = '#2b2b2b';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(startBtnX, startBtnY, startBtnW, startBtnH);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '11px "Press Start 2P", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('▶ TAP TO START', C.WIDTH / 2, startBtnY + 26);
+  }
+
+  _drawDesktop(ctx) {
     // Header Title
     ctx.fillStyle = '#2b2b2b';
     ctx.font = C.FONTS.TITLE;
@@ -1000,7 +1117,6 @@ class CharacterSelectScreen {
       const cx = startX + idx * (cardW + gap);
       const isSelected = idx === this.selected;
 
-      // Card Box
       ctx.fillStyle = isSelected ? '#ffffff' : '#f0f0f0';
       ctx.fillRect(cx, cardY, cardW, cardH);
 
@@ -1009,7 +1125,6 @@ class CharacterSelectScreen {
       ctx.strokeRect(cx, cardY, cardW, cardH);
 
       if (isSelected) {
-        // Selected badge ribbon
         ctx.fillStyle = '#c93b2b';
         ctx.fillRect(cx, cardY, cardW, 14);
         ctx.fillStyle = '#ffffff';
@@ -1018,11 +1133,9 @@ class CharacterSelectScreen {
         ctx.fillText('SELECTED', cx + cardW / 2, cardY + 10);
       }
 
-      // Draw Animated Character Sprite inside card
       const runSprites = ch.sprites.run;
       const frameKey = runSprites[this.animFrame % runSprites.length];
       const img = this.loader.get(frameKey);
-
       const spriteDrawX = cx + (cardW - ch.w) / 2;
       const spriteDrawY = cardY + 22;
 
@@ -1030,7 +1143,6 @@ class CharacterSelectScreen {
         ctx.drawImage(img, 0, 0, img.width, img.height, spriteDrawX, spriteDrawY, ch.w, ch.h);
       }
 
-      // Character Name & Lore Tag
       ctx.fillStyle = isSelected ? '#2b2b2b' : '#666666';
       ctx.font = '9px "Press Start 2P", monospace';
       ctx.textAlign = 'center';
@@ -1046,7 +1158,6 @@ class CharacterSelectScreen {
     ctx.strokeStyle = '#333333';
     ctx.lineWidth = 2;
 
-    // Left Arrow <
     ctx.fillRect(16, 96, 36, 40);
     ctx.strokeRect(16, 96, 36, 40);
     ctx.fillStyle = '#2b2b2b';
@@ -1054,14 +1165,13 @@ class CharacterSelectScreen {
     ctx.textAlign = 'center';
     ctx.fillText('◀', 34, 122);
 
-    // Right Arrow >
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(C.WIDTH - 52, 96, 36, 40);
     ctx.strokeRect(C.WIDTH - 52, 96, 36, 40);
     ctx.fillStyle = '#2b2b2b';
     ctx.fillText('▶', C.WIDTH - 34, 122);
 
-    // Explicit Touch Start Button
+    // Touch Start Button
     const startBtnW = 260;
     const startBtnH = 32;
     const startBtnX = (C.WIDTH - startBtnW) / 2;
@@ -1077,23 +1187,47 @@ class CharacterSelectScreen {
     ctx.font = '10px "Press Start 2P", monospace';
     ctx.textAlign = 'center';
     ctx.fillText('▶ TAP TO START', C.WIDTH / 2, startBtnY + 21);
-
-    ctx.restore();
   }
 
   handleClick(canvasX, canvasY) {
-    // Check Left Arrow
+    if (C.IS_MOBILE) {
+      // Left Arrow
+      if (canvasX >= 22 && canvasX <= 80 && canvasY >= 105 && canvasY <= 163) {
+        this.prev();
+        return 'nav';
+      }
+      // Right Arrow
+      if (canvasX >= C.WIDTH - 80 && canvasX <= C.WIDTH - 22 && canvasY >= 105 && canvasY <= 163) {
+        this.next();
+        return 'nav';
+      }
+
+      // Center Card tap switches to next character
+      const cardW = 280;
+      const cardH = 146;
+      const cardX = (C.WIDTH - cardW) / 2;
+      const cardY = 62;
+      if (canvasX >= cardX && canvasX <= cardX + cardW && canvasY >= cardY && canvasY <= cardY + cardH) {
+        this.next();
+        return 'card';
+      }
+
+      // Tapping anywhere else starts the game
+      return 'start';
+    }
+
+    // Check Left Arrow (Desktop)
     if (canvasX >= 16 && canvasX <= 52 && canvasY >= 96 && canvasY <= 136) {
       this.prev();
       return 'nav';
     }
-    // Check Right Arrow
+    // Check Right Arrow (Desktop)
     if (canvasX >= C.WIDTH - 52 && canvasX <= C.WIDTH - 16 && canvasY >= 96 && canvasY <= 136) {
       this.next();
       return 'nav';
     }
 
-    // Check Cards
+    // Check Cards (Desktop)
     const cardW = 180;
     const cardH = 100;
     const gap = 16;
@@ -1206,10 +1340,16 @@ class Game {
   }
 
   _setupCanvasResolution() {
+    const isMobile = window.innerWidth <= 680;
+    C.IS_MOBILE = isMobile;
+    C.WIDTH = isMobile ? 540 : 900;
+    C.HEIGHT = isMobile ? 340 : 250;
+    C.GROUND_Y = isMobile ? 282 : 202;
+
     const dpr = window.devicePixelRatio || 1;
     this.dpr = dpr;
 
-    // Logical game dimensions: 900 x 250
+    // Logical game dimensions
     this.canvas.width = C.WIDTH * dpr;
     this.canvas.height = C.HEIGHT * dpr;
 
@@ -1219,6 +1359,14 @@ class Game {
 
     // Disable smoothing on pixel art
     this.ctx.imageSmoothingEnabled = false;
+
+    // Adjust active player position if on ground
+    if (this.player) {
+      this.player.x = C.IS_MOBILE ? 60 : 80;
+      if (this.player.onGround) {
+        this.player.y = C.GROUND_Y - (this.player.state === 'DUCK' ? this.player.duckH : this.player.h);
+      }
+    }
   }
 
   _startGame() {
@@ -1249,9 +1397,16 @@ class Game {
       localStorage.setItem('demockracy-high-score', this.highScore.toFixed(0));
     }
 
-    // Show share section
+    // Show share section & populate legal citation card
     const shareArea = document.getElementById('share-area');
-    if (shareArea) shareArea.classList.add('visible');
+    if (shareArea) {
+      shareArea.classList.add('visible');
+      const fact = OBSTACLE_FACTS[this.lastHitObstacle] || GENERAL_QUOTES[0];
+      const factElem = document.getElementById('share-fact-card');
+      if (factElem) {
+        factElem.innerHTML = `<span class="fact-badge">${fact.title || 'CONSTITUTION OF INDIA'}</span><p class="fact-desc">${fact.text || fact.sub}</p>`;
+      }
+    }
   }
 
   _bindEvents() {
@@ -1335,10 +1490,10 @@ class Game {
 
       if (this.state === 'GAME_OVER') {
         // Check if clicked "[C] CHANGE CHARACTER" button
-        const btnChangeX = C.WIDTH / 2 - 140;
-        const btnChangeY = 206;
-        const btnW = 280;
-        const btnH = 28;
+        const btnChangeX = C.IS_MOBILE ? (C.WIDTH - 340) / 2 : (C.WIDTH / 2 - 150);
+        const btnChangeY = C.IS_MOBILE ? 282 : 210;
+        const btnW = C.IS_MOBILE ? 340 : 300;
+        const btnH = C.IS_MOBILE ? 32 : 24;
 
         if (canvasX >= btnChangeX && canvasX <= btnChangeX + btnW && canvasY >= btnChangeY && canvasY <= btnChangeY + btnH) {
           this.state = 'CHAR_SELECT';
@@ -1539,82 +1694,165 @@ class Game {
     ctx.save();
 
     // Dark semi-transparent scrim
-    ctx.fillStyle = isDark ? 'rgba(15, 15, 22, 0.82)' : 'rgba(247, 247, 247, 0.88)';
+    ctx.fillStyle = isDark ? 'rgba(15, 15, 22, 0.90)' : 'rgba(247, 247, 247, 0.93)';
     ctx.fillRect(0, 0, C.WIDTH, C.HEIGHT);
 
-    // Header: DEMOCRACY OVER
-    ctx.fillStyle = '#c93b2b';
-    ctx.font = 'bold 22px "Press Start 2P", monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText('DEMOCRACY OVER', C.WIDTH / 2, 42);
-
-    // Score Board
     const sc = String(Math.floor(this.score)).padStart(5, '0');
     const hi = String(Math.floor(this.highScore)).padStart(5, '0');
-
-    ctx.font = '10px "Press Start 2P", monospace';
-    ctx.fillStyle = isDark ? '#ffffff' : '#2b2b2b';
-    ctx.fillText(`SCORE: ${sc}    HIGH: ${hi}`, C.WIDTH / 2, 66);
-
-    // Fact-Checked Legal Context Box
     const fact = OBSTACLE_FACTS[this.lastHitObstacle] || GENERAL_QUOTES[0];
-    const factBoxW = 680;
-    const factBoxH = 78;
-    const factBoxX = (C.WIDTH - factBoxW) / 2;
-    const factBoxY = 82;
 
-    ctx.fillStyle = isDark ? '#232330' : '#ffffff';
-    ctx.fillRect(factBoxX, factBoxY, factBoxW, factBoxH);
+    if (C.IS_MOBILE) {
+      // ── MOBILE GAME OVER LAYOUT ──
+      // 1. Header: DEMOCRACY OVER
+      ctx.fillStyle = '#c93b2b';
+      ctx.font = 'bold 18px "Press Start 2P", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('DEMOCRACY OVER', C.WIDTH / 2, 34);
 
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = '#c93b2b';
-    ctx.strokeRect(factBoxX, factBoxY, factBoxW, factBoxH);
+      // 2. Score Board
+      ctx.font = '10px "Press Start 2P", monospace';
+      ctx.fillStyle = isDark ? '#ffffff' : '#2b2b2b';
+      ctx.fillText(`SCORE: ${sc}    HIGH: ${hi}`, C.WIDTH / 2, 54);
 
-    // Fact Title
-    ctx.fillStyle = '#c93b2b';
-    ctx.font = C.FONTS.FACT_TITLE;
-    ctx.textAlign = 'left';
-    ctx.fillText(fact.title || 'CONSTITUTION OF INDIA', factBoxX + 16, factBoxY + 18);
+      // 3. Fact-Checked Legal Context Box (Prominent & Clear)
+      const factBoxW = 490;
+      const factBoxH = 150;
+      const factBoxX = (C.WIDTH - factBoxW) / 2;
+      const factBoxY = 68;
 
-    // Fact Body Text (cleanly wrapped)
-    ctx.fillStyle = isDark ? '#d0d0e0' : '#444444';
-    ctx.font = C.FONTS.FACT_BODY;
-    this._wrapText(ctx, fact.text || fact.sub, factBoxX + 16, factBoxY + 36, factBoxW - 32, 18);
+      ctx.fillStyle = isDark ? '#232330' : '#ffffff';
+      ctx.fillRect(factBoxX, factBoxY, factBoxW, factBoxH);
 
-    // Actions
-    ctx.textAlign = 'center';
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#c93b2b';
+      ctx.strokeRect(factBoxX, factBoxY, factBoxW, factBoxH);
 
-    // Interactive Tap to Retry Button
-    const btnRetryX = C.WIDTH / 2 - 140;
-    const btnRetryY = 174;
-    const btnRetryW = 280;
-    const btnRetryH = 28;
+      // Red Top Header Ribbon inside card
+      ctx.fillStyle = '#c93b2b';
+      ctx.fillRect(factBoxX, factBoxY, factBoxW, 24);
 
-    ctx.fillStyle = '#c93b2b';
-    ctx.fillRect(btnRetryX, btnRetryY, btnRetryW, btnRetryH);
-    ctx.strokeStyle = '#2b2b2b';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(btnRetryX, btnRetryY, btnRetryW, btnRetryH);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 9px "Press Start 2P", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(fact.title || 'CONSTITUTION OF INDIA', factBoxX + factBoxW / 2, factBoxY + 16);
 
-    ctx.font = '10px "Press Start 2P", monospace';
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText('▶ TAP TO RETRY', C.WIDTH / 2, btnRetryY + 19);
+      // Fact Body Text (Readable 13px Georgia with 20px line height)
+      ctx.fillStyle = isDark ? '#d0d0e0' : '#2b2b2b';
+      ctx.font = '13px Georgia, serif';
+      ctx.textAlign = 'left';
+      this._wrapText(ctx, fact.text || fact.sub, factBoxX + 16, factBoxY + 46, factBoxW - 32, 20);
 
-    // Interactive Change Character Button
-    const btnChangeX = C.WIDTH / 2 - 140;
-    const btnChangeY = 208;
-    const btnChangeW = 280;
-    const btnChangeH = 24;
+      // 4. Action Buttons
+      ctx.textAlign = 'center';
 
-    ctx.fillStyle = isDark ? '#333344' : '#eaeaea';
-    ctx.fillRect(btnChangeX, btnChangeY, btnChangeW, btnChangeH);
-    ctx.strokeStyle = '#888888';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(btnChangeX, btnChangeY, btnChangeW, btnChangeH);
+      // Tap to Retry Button
+      const btnRetryW = 340;
+      const btnRetryH = 40;
+      const btnRetryX = (C.WIDTH - btnRetryW) / 2;
+      const btnRetryY = 232;
 
-    ctx.font = '9px "Silkscreen", monospace';
-    ctx.fillStyle = isDark ? '#ffffff' : '#333333';
-    ctx.fillText('[C] CHANGE CHARACTER', C.WIDTH / 2, btnChangeY + 16);
+      ctx.fillStyle = '#c93b2b';
+      ctx.fillRect(btnRetryX, btnRetryY, btnRetryW, btnRetryH);
+      ctx.strokeStyle = '#2b2b2b';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(btnRetryX, btnRetryY, btnRetryW, btnRetryH);
+
+      ctx.font = '11px "Press Start 2P", monospace';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText('▶ TAP TO RETRY', C.WIDTH / 2, btnRetryY + 25);
+
+      // Change Character Button
+      const btnChangeW = 340;
+      const btnChangeH = 32;
+      const btnChangeX = (C.WIDTH - btnChangeW) / 2;
+      const btnChangeY = 282;
+
+      ctx.fillStyle = isDark ? '#333344' : '#eaeaea';
+      ctx.fillRect(btnChangeX, btnChangeY, btnChangeW, btnChangeH);
+      ctx.strokeStyle = '#888888';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(btnChangeX, btnChangeY, btnChangeW, btnChangeH);
+
+      ctx.font = '10px "Silkscreen", monospace';
+      ctx.fillStyle = isDark ? '#ffffff' : '#333333';
+      ctx.fillText('[C] CHANGE CHARACTER', C.WIDTH / 2, btnChangeY + 21);
+
+    } else {
+      // ── DESKTOP GAME OVER LAYOUT ──
+      // Header: DEMOCRACY OVER
+      ctx.fillStyle = '#c93b2b';
+      ctx.font = 'bold 22px "Press Start 2P", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('DEMOCRACY OVER', C.WIDTH / 2, 40);
+
+      // Score Board
+      ctx.font = '10px "Press Start 2P", monospace';
+      ctx.fillStyle = isDark ? '#ffffff' : '#2b2b2b';
+      ctx.fillText(`SCORE: ${sc}    HIGH: ${hi}`, C.WIDTH / 2, 62);
+
+      // Fact-Checked Legal Context Box
+      const factBoxW = 720;
+      const factBoxH = 88;
+      const factBoxX = (C.WIDTH - factBoxW) / 2;
+      const factBoxY = 74;
+
+      ctx.fillStyle = isDark ? '#232330' : '#ffffff';
+      ctx.fillRect(factBoxX, factBoxY, factBoxW, factBoxH);
+
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#c93b2b';
+      ctx.strokeRect(factBoxX, factBoxY, factBoxW, factBoxH);
+
+      // Red accent left border
+      ctx.fillStyle = '#c93b2b';
+      ctx.fillRect(factBoxX, factBoxY, 6, factBoxH);
+
+      // Fact Title
+      ctx.fillStyle = '#c93b2b';
+      ctx.font = 'bold 11px "Press Start 2P", monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(fact.title || 'CONSTITUTION OF INDIA', factBoxX + 20, factBoxY + 22);
+
+      // Fact Body Text
+      ctx.fillStyle = isDark ? '#d0d0e0' : '#333333';
+      ctx.font = '13px Georgia, serif';
+      this._wrapText(ctx, fact.text || fact.sub, factBoxX + 20, factBoxY + 44, factBoxW - 40, 19);
+
+      // Actions
+      ctx.textAlign = 'center';
+
+      // Interactive Tap to Retry Button
+      const btnRetryX = C.WIDTH / 2 - 150;
+      const btnRetryY = 172;
+      const btnRetryW = 300;
+      const btnRetryH = 30;
+
+      ctx.fillStyle = '#c93b2b';
+      ctx.fillRect(btnRetryX, btnRetryY, btnRetryW, btnRetryH);
+      ctx.strokeStyle = '#2b2b2b';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(btnRetryX, btnRetryY, btnRetryW, btnRetryH);
+
+      ctx.font = '11px "Press Start 2P", monospace';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText('▶ TAP TO RETRY', C.WIDTH / 2, btnRetryY + 20);
+
+      // Interactive Change Character Button
+      const btnChangeX = C.WIDTH / 2 - 150;
+      const btnChangeY = 210;
+      const btnChangeW = 300;
+      const btnChangeH = 24;
+
+      ctx.fillStyle = isDark ? '#333344' : '#eaeaea';
+      ctx.fillRect(btnChangeX, btnChangeY, btnChangeW, btnChangeH);
+      ctx.strokeStyle = '#888888';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(btnChangeX, btnChangeY, btnChangeW, btnChangeH);
+
+      ctx.font = '9px "Silkscreen", monospace';
+      ctx.fillStyle = isDark ? '#ffffff' : '#333333';
+      ctx.fillText('[C] CHANGE CHARACTER', C.WIDTH / 2, btnChangeY + 16);
+    }
 
     ctx.restore();
   }
